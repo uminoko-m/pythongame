@@ -13,6 +13,20 @@ class App:
     def __init__(self):
         pyxel.init(255, 180)        #window sizeの指定　最大(255,255)
         pyxel.load("picture.pyxres")     #画像読み込み
+        pyxel.run(self.update_menu, self.draw_menu)
+        
+
+    def draw_menu(self):        #menu画面の描写
+        pyxel.cls(0)        #背景色　黒
+        s = "--- PUSH SPACE KEY ---"
+        pyxel.text(80, 90, s, 7)
+
+    def update_menu(self):      #menu画面の操作
+        #　スペースキーを押したらゲーム開始
+        if pyxel.btn(pyxel.KEY_SPACE):
+            self.game_start()
+        
+    def game_start(self):           #ゲーム開始
         self.direction = RIGHT
 
         # スコア
@@ -25,10 +39,9 @@ class App:
         self.monster = [(i * 60, randint(0, 104), True) for i in range(4)]
  
         pyxel.playm(0, loop=True)
-        pyxel.run(self.update, self.draw)
+        pyxel.run(self.update_game, self.draw_game)
 
-
-    def update(self):
+    def update_game(self):
         if pyxel.btnp(pyxel.KEY_Q):     #Qを押したら終了
             pyxel.quit()
 
@@ -39,25 +52,23 @@ class App:
 
 
     def update_player(self):        #キャラ操作詳細
-        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD_1_LEFT):
+        if pyxel.btn(pyxel.KEY_LEFT):
             self.player_x = max(self.player_x - 2, 0)
             self.direction = LEFT
  
-        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD_1_RIGHT):
+        if pyxel.btn(pyxel.KEY_RIGHT):
             self.player_x = min(self.player_x + 2, pyxel.width - 16)
             self.direction = RIGHT
 
-        if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD_1_UP):
+        if pyxel.btn(pyxel.KEY_UP):
             self.player_y = max(self.player_y - 2, 0)
             self.direction = UP
 
-        if pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD_1_DOWN):
+        if pyxel.btn(pyxel.KEY_DOWN):
             self.player_y = min(self.player_y + 2, pyxel.height - 16)
             self.direction = DOWN
 
-    def draw(self):
-        pyxel.cls(0)
-
+    def draw_game(self):
         # 背景色
         pyxel.cls(12)
  
@@ -100,8 +111,8 @@ class App:
         x -= 2
  
         if x < -40:
-            x += 240
-            y = randint(0, 104)
+            x += 290
+            y = randint(0, 150)
             is_active = True
  
         return (x, y, is_active)
