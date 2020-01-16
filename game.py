@@ -108,7 +108,8 @@ class App:
             self.player_vy = min(self.player_vy, -8)
             pyxel.play(3, 4)
  
-        x -= 2
+        n=2
+        x -= n
  
         if x < -40:
             x += 290
