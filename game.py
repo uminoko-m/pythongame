@@ -11,7 +11,7 @@ LEFT = Point(16, 16)
 
 class App:
     def __init__(self):
-        pyxel.init(255, 180)        #window sizeの指定　最大(255,255)
+        pyxel.init(255, 160)        #window sizeの指定　最大(255,255)
         pyxel.load("picture.pyxres")     #画像読み込み
         pyxel.run(self.update_menu, self.draw_menu)
         
@@ -36,7 +36,7 @@ class App:
         self.player_x = 42
         self.player_y = 60
         self.player_vy = 0
-        self.monster = [(i * 60, randint(0, 104), True) for i in range(4)]
+        self.monster = [(randint(200,240),randint(30,150), True)for i in range(4)]
  
         pyxel.playm(0, loop=True)
         pyxel.run(self.update_game, self.draw_game)
@@ -72,10 +72,11 @@ class App:
         # 背景色
         pyxel.cls(12)
  
-        # 魔物
+        # 魔物と火
         for x, y, is_active in self.monster:
             if is_active:
-                pyxel.blt(x, y, 0, 0, 90, 16, 14, 0)
+                pyxel.blt(x+16, y, 0, 0, 90, 16, 14, 0)
+                pyxel.blt(x,y,0,16,88,16,16,0)
  
         # 勇者ミニ
         pyxel.blt(
@@ -88,32 +89,35 @@ class App:
             self.direction[1],
             0,
         )
- 
+
+        # ハート表示
+        hx=0
+        for i in range(5):
+            pyxel.blt(hx,10,0,0,104,16,16,0)
+            hx+=16
+
         # スコアを表示
         s = "Score {:>4}".format(self.score)
         pyxel.text(5, 4, s, 1)
         pyxel.text(4, 4, s, 7)
 
-       
-        #pyxel.blt(48, 45, 0, 0, 0, -48, 72,0)       #勇者
-        #pyxel.blt(60,120, 0, 0, 72, -15, 16,0)      #勇者ミニ
-        #pyxel.blt(100, 45, 1, 0, 0, -55, 72,0)      #魔法使い
-        #pyxel.blt(110, 120, 1, 0, 72, -15, 16,0)    #魔法使いミニ
-        #pyxel.blt(150, 45, 2, 0, 0, -48, 72,0)      #戦士
-
     def update_monster(self, x, y, is_active):
         if is_active and abs(x - self.player_x) < 12 and abs(y - self.player_y) < 12:
-            is_active = False
-            self.score += 100
-            self.player_vy = min(self.player_vy, -8)
-            pyxel.play(3, 4)
- 
+            if pyxel.btn(pyxel.KEY_SPACE):
+                is_active = False
+                self.score += 100
+                self.player_vy = min(self.player_vy, -8)
+                pyxel.play(3, 4)
+            else:
+                is_active = False
+                
+
         n=2
-        x -= n
- 
+        x-=n
+
         if x < -40:
             x += 290
-            y = randint(0, 150)
+            y = randint(30, 150)
             is_active = True
  
         return (x, y, is_active)
