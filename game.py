@@ -37,6 +37,7 @@ class App:
         self.player_y = 60
         self.player_vy = 0
         self.monster = [(randint(200,240),randint(30,150), True)for i in range(4)]
+        self.star=[(randint(0,255),randint(0,150), True)for i in range(25)]
  
         pyxel.playm(0, loop=True)
         pyxel.run(self.update_game, self.draw_game)
@@ -49,6 +50,9 @@ class App:
 
         for i, v in enumerate(self.monster):      #魔物出現
             self.monster[i] = self.update_monster(*v)
+
+        for i, v in enumerate(self.star):      #星
+            self.star[i] = self.update_star(*v)
 
 
     def update_player(self):        #キャラ操作詳細
@@ -70,7 +74,11 @@ class App:
 
     def draw_game(self):
         # 背景色
-        pyxel.cls(12)
+        pyxel.cls(0)
+        #星を描写
+        for x, y, is_active in self.star:
+            if is_active:
+                pyxel.blt(x, y, 0, 16, 104, 6, 6, 0)
  
         # 魔物と火
         for x, y, is_active in self.monster:
@@ -101,9 +109,18 @@ class App:
         pyxel.text(5, 4, s, 1)
         pyxel.text(4, 4, s, 7)
 
+    def update_star(self,x,y,is_active):
+        n=2
+        x-=n
+        if x < -40:
+            x += 290
+            y = randint(30, 150)
+            is_active = True
+        return (x, y, is_active)
+
     def update_monster(self, x, y, is_active):
         if is_active and abs(x - self.player_x) < 12 and abs(y - self.player_y) < 12:
-            if pyxel.btn(pyxel.KEY_SPACE):
+            if pyxel.btn(pyxel.KEY_SPACE):      #スペースキーを押したらスコア反映
                 is_active = False
                 self.score += 100
                 self.player_vy = min(self.player_vy, -8)
