@@ -3,7 +3,7 @@ from random import randint
 import pyxel
 
 Point = namedtuple("Point", ["w", "h"])  # キャラの向き
- 
+
 UP = Point(-16, 16)
 DOWN = Point(-16, 16)
 RIGHT = Point(-16, 16)
@@ -30,7 +30,8 @@ class App:
         self.direction = RIGHT
         # スコア
         self.score = 0
-
+        #ハート
+        self.countheart=5
         # 始めの位置
         self.player_x = 20
         self.player_y = 60
@@ -49,6 +50,8 @@ class App:
     def update_game(self):
         if pyxel.btnp(pyxel.KEY_Q):     #Qを押したら終了
             pyxel.quit()
+        if self.countheart ==0:         #ハートがなくなったら終了
+            pyxel.quit()
 
         self.update_player()            #キャラ操作
 
@@ -63,6 +66,14 @@ class App:
 
 
     def update_player(self):        #キャラ操作詳細
+        if pyxel.btn(pyxel.KEY_LEFT):
+            self.player_x = max(self.player_x - 2, 0)
+            self.direction = LEFT
+ 
+        if pyxel.btn(pyxel.KEY_RIGHT):
+            self.player_x = min(self.player_x + 2, pyxel.width - 16)
+            self.direction = RIGHT
+
         if pyxel.btn(pyxel.KEY_UP):
             self.player_y = max(self.player_y - 2, 0)
             self.direction = UP
@@ -106,7 +117,7 @@ class App:
 
         # ハート表示
         hx=0
-        for i in range(5):
+        for i in range(self.countheart):
             pyxel.blt(hx,10,0,0,104,16,16,0)
             hx+=16
 
@@ -116,8 +127,12 @@ class App:
         pyxel.text(4, 4, s, 7)
 
     def update_star(self,x,y,is_active):
+        if is_active and abs(x - self.player_x) < 5 and abs(y-self.player_y)< 5:
+            self.countheart-=1
+
         n=2
         x-=n
+        
         if x < -40:
             x += 290
             y = randint(30, 150)
@@ -131,8 +146,8 @@ class App:
             self.flag=0
 
         if is_active==False:
-            x =225
-            y = randint(30, 150)
+            x =200
+            y = randint(30, 130)
             is_active = True
 
         self.monster_x=x
