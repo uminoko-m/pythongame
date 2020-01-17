@@ -25,7 +25,19 @@ class App:
         #　スペースキーを押したらゲーム開始
         if pyxel.btn(pyxel.KEY_SPACE):
             self.game_start()
-        
+    
+    def draw_gameover(self):        #menu画面の描写
+        pyxel.cls(0)        #背景色　黒
+        l = "Game Over"
+        s = "--- PUSH SPACE KEY ---"
+        pyxel.text(80, 60, l, 7)
+        pyxel.text(80, 90, s, 7)
+
+    def update_gameover(self):      #gameover画面の操作
+        #　スペースキーを押したら終了
+        if pyxel.btn(pyxel.KEY_SPACE):
+            pyxel.quit()
+
     def game_start(self):           #ゲーム開始
         self.direction = RIGHT
         # スコア
@@ -42,7 +54,7 @@ class App:
         for i in range(len(self.monster)):
             self.fire.append((self.monster[i][0]-16,self.monster[i][1],self.monster[i][2],self.flag))
 
-        self.star=[(randint(0,255),randint(0,150), True)for i in range(25)]
+        self.star=[(randint(0,255),randint(0,150), True)for i in range(15)]
 
         pyxel.playm(0, loop=True)
         pyxel.run(self.update_game, self.draw_game)
@@ -50,8 +62,8 @@ class App:
     def update_game(self):
         if pyxel.btnp(pyxel.KEY_Q):     #Qを押したら終了
             pyxel.quit()
-        if self.countheart ==0:         #ハートがなくなったら終了
-            pyxel.quit()
+        if self.countheart ==0:         #ハートがなくなったらゲームオーバー
+            pyxel.run(self.update_gameover, self.draw_gameover)
 
         self.update_player()            #キャラ操作
 
@@ -127,7 +139,7 @@ class App:
         pyxel.text(4, 4, s, 7)
 
     def update_star(self,x,y,is_active):
-        if is_active and abs(x - self.player_x) < 5 and abs(y-self.player_y)< 5:
+        if is_active and abs(x - self.player_x) < 3 and abs(y-self.player_y)< 3:
             self.countheart-=1
 
         n=2
