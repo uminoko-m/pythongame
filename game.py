@@ -26,8 +26,9 @@ class App:
     def update_menu(self):      #menu画面の操作
         #　スペースキーを押したらゲーム開始
         if pyxel.btn(pyxel.KEY_SPACE):
+            self.stagenumber=1
             self.game_start()
-    
+
     def draw_gameover(self):        #game over画面の描写
         pyxel.cls(0)        #背景色　黒
         l = "Game Over"
@@ -40,10 +41,40 @@ class App:
         if pyxel.btn(pyxel.KEY_SPACE):
             pyxel.quit()
 
+    def update_stage(self):     #次のステージに進む
+        #　スペースキーを押したらゲーム開始
+        if pyxel.btn(pyxel.KEY_SPACE):
+            self.game_start()
+
+    def update_clear(self):
+        #　スペースキーを押したら終了
+        if pyxel.btn(pyxel.KEY_SPACE):
+            pyxel.quit()
+
+    def draw_stage(self):        #nextstage画面の描写
+        pyxel.cls(0)        #背景色　黒
+        if self.stagenumber==2:
+            l = "Next Stage  -- Stage 2 --"
+        if self.stagenumber == 3:
+            l = "Next Stage  -- Stage 3 --"
+        s = "--- PUSH SPACE KEY ---"
+        pyxel.text(80, 60, l, 7)
+        pyxel.text(80, 90, s, 7)
+
+    def draw_clear(self):       #ゲームクリア画面
+        pyxel.cls(0)        #背景色　黒
+        l = "Game Clear !!"
+        s = " Exit --- PUSH SPACE KEY ---"
+        pyxel.text(80, 60, l, 7)
+        pyxel.text(80, 90, s, 7)
+
+
     def game_start(self):           #ゲーム開始
         self.direction = RIGHT
         # スコア
         self.score = 0
+        #倒したモンスター数
+        self.countmonster=0
         #ハート
         self.countheart=5
         # 始めの位置
@@ -56,7 +87,13 @@ class App:
         for i in range(len(self.monster)):
             self.fire.append((self.monster[i][0]-16,self.monster[i][1],self.monster[i][2],self.flag))
 
-        self.star=[(randint(0,255),randint(0,150), True)for i in range(15)]
+        if self.stagenumber==1:
+            self.stardrop=10
+        if self.stagenumber ==2:
+            self.stardrop=15
+        if self.stagenumber == 3:
+            self.stardrop=20
+        self.star=[(randint(0,255),randint(0,150), True)for i in range(self.stardrop)]
 
         pyxel.playm(0, loop=True)
         pyxel.run(self.update_game, self.draw_game)
@@ -66,6 +103,13 @@ class App:
             pyxel.quit()
         if self.countheart ==0:         #ハートがなくなったらゲームオーバー
             pyxel.run(self.update_gameover, self.draw_gameover)
+        
+        if self.countmonster > 5:       #倒したモンスターが5体になったら次のステージへ
+            self.stagenumber+=1
+            if self.stagenumber > 3:
+                pyxel.run(self.update_clear,self.draw_clear)    #ステージ３クリアでゲームクリア
+            else:
+                pyxel.run(self.update_stage,self.draw_stage)
 
         self.update_player()            #キャラ操作
 
@@ -157,6 +201,7 @@ class App:
         if is_active and abs(x - self.fire_x) < 10 and abs(y-self.fire_y)< 10:
             is_active = False
             self.score += 100
+            self.countmonster+=1
             self.flag=0
 
         if is_active==False:
