@@ -35,18 +35,11 @@ class App:
         s = "--- PUSH SPACE KEY ---"
         pyxel.text(80, 60, l, 7)
         pyxel.text(80, 90, s, 7)
+        # スコアを表示
+        b = "Score {:>4}".format(self.score)
+        pyxel.text(80, 40, b, 7)
 
     def update_gameover(self):      #game over画面の操作
-        #　スペースキーを押したら終了
-        if pyxel.btn(pyxel.KEY_SPACE):
-            pyxel.quit()
-
-    def update_stage(self):     #次のステージに進む
-        #　スペースキーを押したらゲーム開始
-        if pyxel.btn(pyxel.KEY_SPACE):
-            self.game_start()
-
-    def update_clear(self):
         #　スペースキーを押したら終了
         if pyxel.btn(pyxel.KEY_SPACE):
             pyxel.quit()
@@ -61,18 +54,38 @@ class App:
         pyxel.text(80, 60, l, 7)
         pyxel.text(80, 90, s, 7)
 
+        # スコアを表示
+        b = "Score {:>4}".format(self.score)
+        pyxel.text(80, 40, b, 7)
+
+    def update_stage(self):     #次のステージに進む
+        #　スペースキーを押したらゲーム開始
+        if pyxel.btn(pyxel.KEY_SPACE):
+            self.game_start()
+
     def draw_clear(self):       #ゲームクリア画面
         pyxel.cls(0)        #背景色　黒
         l = "Game Clear !!"
         s = " Exit --- PUSH SPACE KEY ---"
         pyxel.text(80, 60, l, 7)
         pyxel.text(80, 90, s, 7)
+        # スコアを表示
+        b = "Score {:>4}".format(self.score)
+        pyxel.text(80, 40, b, 7)
+
+    def update_clear(self):
+        #　スペースキーを押したら終了
+        if pyxel.btn(pyxel.KEY_SPACE):
+            pyxel.quit()
 
 
     def game_start(self):           #ゲーム開始
         self.direction = RIGHT
         # スコア
-        self.score = 0
+        if self.stagenumber==1:
+            self.score = 0
+        if self.stagenumber > 1:
+            self.score = self.score
         #倒したモンスター数
         self.countmonster=0
         #ハート
@@ -106,6 +119,7 @@ class App:
         
         if self.countmonster > 5:       #倒したモンスターが5体になったら次のステージへ
             self.stagenumber+=1
+            self.score += self.countheart * 100
             if self.stagenumber > 3:
                 pyxel.run(self.update_clear,self.draw_clear)    #ステージ３クリアでゲームクリア
             else:
@@ -181,7 +195,6 @@ class App:
 
         # スコアを表示
         s = "Score {:>4}".format(self.score)
-        pyxel.text(5, 4, s, 1)
         pyxel.text(4, 4, s, 7)
 
     def update_star(self,x,y,is_active):
